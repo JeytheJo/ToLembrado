@@ -5,7 +5,7 @@ import BotaoVoltar from '../components/BotaoVoltar';
 import BotaoAcessivel from '../components/BotaoAcessivel';
 import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../constants/theme';
 
-export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVoltar }) {
+export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVoltar, onEditarPerfil }) {
   const [perfis, setPerfis] = useState([]);
 
   useEffect(() => {
@@ -15,10 +15,6 @@ export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVolt
   function carregarPerfis() {
     const lista = db.getAllSync('SELECT * FROM perfil_usuario ORDER BY created_at ASC');
     setPerfis(lista);
-  }
-
-  function selecionar(id) {
-    onSelecionar(id);
   }
 
   function excluirPerfil(perfil) {
@@ -64,7 +60,7 @@ export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVolt
         <TouchableOpacity
           key={perfil.id_usuario}
           style={[styles.card, perfil.id_usuario === idUsuarioAtivo && styles.cardAtivo]}
-          onPress={() => selecionar(perfil.id_usuario)}
+          onPress={() => onSelecionar(perfil.id_usuario)}
           activeOpacity={0.7}
         >
           <View style={styles.cardConteudo}>
@@ -82,12 +78,20 @@ export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVolt
               <Text style={styles.ativo}>✓ Ativo</Text>
             )}
           </View>
-          <TouchableOpacity
-            style={styles.botaoExcluir}
-            onPress={() => excluirPerfil(perfil)}
-          >
-            <Text style={styles.botaoExcluirTexto}>🗑️</Text>
-          </TouchableOpacity>
+          <View style={styles.acoes}>
+            <TouchableOpacity
+              style={styles.botaoAcao}
+              onPress={() => onEditarPerfil(perfil.id_usuario)}
+            >
+              <Text style={styles.botaoAcaoTexto}>✏️</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.botaoAcao}
+              onPress={() => excluirPerfil(perfil)}
+            >
+              <Text style={styles.botaoAcaoTexto}>🗑️</Text>
+            </TouchableOpacity>
+          </View>
         </TouchableOpacity>
       ))}
 
@@ -115,12 +119,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
     borderWidth: 2,
     borderColor: COLORS.border,
-    flexDirection: 'row',
-    alignItems: 'center',
     minHeight: MIN_TOUCH + 16,
   },
   cardAtivo: { borderColor: COLORS.primary, backgroundColor: '#eef0ff' },
-  cardConteudo: { flex: 1, flexDirection: 'row', alignItems: 'center' },
+  cardConteudo: { flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.sm },
   avatar: {
     width: 56,
     height: 56,
@@ -136,7 +138,8 @@ const styles = StyleSheet.create({
   cardIdade: { fontSize: FONTS.medium, color: COLORS.textSecondary, marginTop: 2 },
   cardDescricao: { fontSize: FONTS.small, color: COLORS.textMuted, marginTop: 4 },
   ativo: { fontSize: FONTS.small, color: COLORS.primary, fontWeight: 'bold' },
-  botaoExcluir: { padding: SPACING.sm, minHeight: MIN_TOUCH, justifyContent: 'center' },
-  botaoExcluirTexto: { fontSize: 22 },
+  acoes: { flexDirection: 'row', justifyContent: 'flex-end' },
+  botaoAcao: { padding: SPACING.sm, minHeight: MIN_TOUCH, justifyContent: 'center', paddingHorizontal: SPACING.md },
+  botaoAcaoTexto: { fontSize: 24 },
   divisor: { height: 1, backgroundColor: COLORS.border, marginVertical: SPACING.lg },
 });

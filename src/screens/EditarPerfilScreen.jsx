@@ -1,18 +1,20 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, ScrollView,
-  StyleSheet, Alert, Image
+  StyleSheet, Alert, TouchableOpacity
 } from 'react-native';
 import db from '../database/database';
-import BotaoAcessivel from '../components/BotaoAcessivel';
 import BotaoVoltar from '../components/BotaoVoltar';
+import BotaoAcessivel from '../components/BotaoAcessivel';
 import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../constants/theme';
 
-export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = true }) {
-  const [nome, setNome] = useState('');
-  const [idade, setIdade] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [observacoes, setObservacoes] = useState('');
+export default function EditarPerfilScreen({ idUsuario, onSalvar, onVoltar }) {
+  const perfil = db.getFirstSync('SELECT * FROM perfil_usuario WHERE id_usuario = ?', [idUsuario]);
+
+  const [nome, setNome] = useState(perfil?.name || '');
+  const [idade, setIdade] = useState(perfil?.idade || '');
+  const [descricao, setDescricao] = useState(perfil?.descricao || '');
+  const [observacoes, setObservacoes] = useState(perfil?.observacoes_gerais || '');
 
   const formularioValido = nome.trim().length > 0 && idade.trim().length > 0;
 
@@ -27,27 +29,19 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
       return;
     }
     db.runSync(
-      'INSERT INTO perfil_usuario (name, idade, descricao, observacoes_gerais) VALUES (?, ?, ?, ?)',
-      [nome.trim(), idade.trim(), descricao.trim(), observacoes.trim()]
+      `UPDATE perfil_usuario SET name=?, idade=?, descricao=?, observacoes_gerais=? WHERE id_usuario=?`,
+      [nome.trim(), idade.trim(), descricao.trim(), observacoes.trim(), idUsuario]
     );
-    const novo = db.getFirstSync('SELECT id_usuario FROM perfil_usuario ORDER BY id_usuario DESC LIMIT 1');
-    onCadastro(novo.id_usuario);
+    Alert.alert('Sucesso!', 'Perfil atualizado com sucesso.', [
+      { text: 'OK', onPress: onSalvar }
+    ]);
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
-      {primeroAcesso ? (
-        <>
-          <Image source={require('../../src/assets/icons/logo.png')} style={styles.logo} />
-          <Text style={styles.tituloPrimeiro}>Olá! Vamos começar?</Text>
-          <Text style={styles.subtituloPrimeiro}>Cadastre o primeiro perfil para continuar</Text>
-        </>
-      ) : (
-        <>
-          <BotaoVoltar onPress={onVoltar} />
-          <Text style={styles.titulo}>Novo Perfil</Text>
-        </>
-      )}
+    <ScrollView style={styles.container}>
+      <BotaoVoltar onPress={onVoltar} />
+
+      <Text style={styles.titulo}>Editar Perfil</Text>
 
       <View style={styles.avatarContainer}>
         <View style={styles.avatar}>
@@ -55,9 +49,10 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
             {nome.charAt(0).toUpperCase() || '?'}
           </Text>
         </View>
+        <Text style={styles.avatarDica}>Foto de perfil em breve</Text>
       </View>
 
-      <Text style={styles.secao}>Nome <Text style={styles.obrigatorio}>*</Text></Text>
+      <Text style={styles.secao}>Nome</Text>
       <TextInput
         style={styles.input}
         placeholder="Nome do idoso"
@@ -67,7 +62,7 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
         autoCapitalize="words"
       />
 
-      <Text style={styles.secao}>Idade <Text style={styles.obrigatorio}>*</Text></Text>
+      <Text style={styles.secao}>Idade</Text>
       <TextInput
         style={styles.input}
         placeholder="Idade"
@@ -100,10 +95,8 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
         numberOfLines={4}
       />
 
-      <Text style={styles.dica}>* Campos obrigatórios</Text>
-
       <BotaoAcessivel
-        titulo={primeroAcesso ? 'Salvar e Continuar' : 'Salvar'}
+        titulo="Salvar alterações"
         onPress={salvar}
         desabilitado={!formularioValido}
         style={{ marginTop: SPACING.lg }}
@@ -115,11 +108,7 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.background },
-  conteudo: { padding: SPACING.lg },
-  logo: { width: 120, height: 120, alignSelf: 'center', marginTop: SPACING.xl, marginBottom: SPACING.md, resizeMode: 'contain' },
-  tituloPrimeiro: { fontSize: FONTS.title, fontWeight: 'bold', color: COLORS.textPrimary, textAlign: 'center', marginBottom: SPACING.xs },
-  subtituloPrimeiro: { fontSize: FONTS.medium, color: COLORS.textSecondary, textAlign: 'center', marginBottom: SPACING.lg },
+  container: { flex: 1, backgroundColor: COLORS.background, padding: SPACING.lg },
   titulo: { fontSize: FONTS.title, fontWeight: 'bold', color: COLORS.textPrimary, marginBottom: SPACING.lg },
   avatarContainer: { alignItems: 'center', marginBottom: SPACING.lg },
   avatar: {
@@ -129,11 +118,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: SPACING.sm,
   },
   avatarTexto: { fontSize: 48, color: COLORS.white, fontWeight: 'bold' },
+  avatarDica: { fontSize: FONTS.small, color: COLORS.textMuted },
   secao: { fontSize: FONTS.medium, fontWeight: '700', color: COLORS.textSecondary, marginTop: SPACING.lg, marginBottom: SPACING.sm },
-  obrigatorio: { color: COLORS.danger },
-  dica: { fontSize: FONTS.small, color: COLORS.textMuted, marginTop: SPACING.sm },
   input: {
     backgroundColor: COLORS.surface,
     borderRadius: 12,

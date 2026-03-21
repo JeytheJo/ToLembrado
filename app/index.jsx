@@ -5,12 +5,14 @@ import CadastroScreen from '../src/screens/CadastroScreen';
 import HomeScreen from '../src/screens/HomeScreen';
 import CadastroTarefaScreen from '../src/screens/CadastroTarefaScreen';
 import MudarPerfilScreen from '../src/screens/MudarPerfilScreen';
+import EditarPerfilScreen from '../src/screens/EditarPerfilScreen';
 
 export default function Index() {
   const [carregando, setCarregando] = useState(true);
   const [idUsuario, setIdUsuario] = useState(null);
   const [tela, setTela] = useState('home');
   const [tarefaEditando, setTarefaEditando] = useState(null);
+  const [idPerfilEditando, setIdPerfilEditando] = useState(null);
 
   useEffect(() => {
     initDatabase();
@@ -21,10 +23,16 @@ export default function Index() {
 
   if (carregando) return null;
 
-  if (!idUsuario || tela === 'novoPerfil') {
+  if (!idUsuario) {
+    return <CadastroScreen primeroAcesso={true} onCadastro={(id) => { setIdUsuario(id); setTela('home'); }} />;
+  }
+
+  if (tela === 'novoPerfil') {
     return (
       <CadastroScreen
-        onCadastro={(id) => { setIdUsuario(id); setTela('home'); }}
+        primeroAcesso={false}
+        onCadastro={(id) => { setTela('mudarPerfil'); }}
+        onVoltar={() => setTela('mudarPerfil')}
       />
     );
   }
@@ -34,14 +42,21 @@ export default function Index() {
       <MudarPerfilScreen
         idUsuarioAtivo={idUsuario}
         onSelecionar={(id) => {
-          if (id === 'novo') {
-            setTela('novoPerfil');
-          } else {
-            setIdUsuario(id);
-            setTela('home');
-          }
+          if (id === 'novo') { setTela('novoPerfil'); }
+          else { setIdUsuario(id); setTela('home'); }
         }}
         onVoltar={() => setTela('home')}
+        onEditarPerfil={(id) => { setIdPerfilEditando(id); setTela('editarPerfil'); }}
+      />
+    );
+  }
+
+  if (tela === 'editarPerfil') {
+    return (
+      <EditarPerfilScreen
+        idUsuario={idPerfilEditando}
+        onSalvar={() => { setIdPerfilEditando(null); setTela('mudarPerfil'); }}
+        onVoltar={() => { setIdPerfilEditando(null); setTela('mudarPerfil'); }}
       />
     );
   }
