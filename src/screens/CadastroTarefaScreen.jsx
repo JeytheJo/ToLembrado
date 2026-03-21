@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity,
-  ScrollView, StyleSheet, Alert
+  Alert,
+  ScrollView, StyleSheet,
+  Text, TextInput, TouchableOpacity,
+  View
 } from 'react-native';
-import db from '../database/database';
 import { ICONES_LISTA } from '../assets/icons/icones';
+import BotaoAcessivel from '../components/BotaoAcessivel';
+import BotaoVoltar from '../components/BotaoVoltar';
+import { COLORS, FONTS, SPACING } from '../constants/theme';
+import db from '../database/database';
 
 const DIAS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
@@ -53,9 +58,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity style={styles.voltar} onPress={onVoltar}>
-        <Text style={styles.voltarTexto}>← Voltar</Text>
-      </TouchableOpacity>
+      <BotaoVoltar onPress={onVoltar} />
 
       <Text style={styles.titulo}>{editando ? 'Editar Tarefa' : 'Nova Tarefa'}</Text>
 
@@ -77,6 +80,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
       <TextInput
         style={styles.input}
         placeholder="Ex: Remédio da manhã"
+        placeholderTextColor={COLORS.textMuted}
         value={titulo}
         onChangeText={setTitulo}
       />
@@ -85,6 +89,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
       <TextInput
         style={styles.input}
         placeholder="Ex: Antes do café"
+        placeholderTextColor={COLORS.textMuted}
         value={subtitulo}
         onChangeText={setSubtitulo}
       />
@@ -93,6 +98,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
       <TextInput
         style={styles.input}
         placeholder="08:00"
+        placeholderTextColor={COLORS.textMuted}
         value={horario}
         onChangeText={setHorario}
         keyboardType="numbers-and-punctuation"
@@ -117,19 +123,19 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
       <TextInput
         style={[styles.input, styles.inputMultiline]}
         placeholder="Detalhes adicionais sobre esta tarefa..."
+        placeholderTextColor={COLORS.textMuted}
         value={descricao}
         onChangeText={setDescricao}
         multiline
         numberOfLines={4}
       />
 
-      <TouchableOpacity
-        style={[styles.botao, !formularioValido && styles.botaoDesabilitado]}
+      <BotaoAcessivel
+        titulo={editando ? 'Salvar alterações' : 'Salvar'}
         onPress={salvar}
-        disabled={!formularioValido}
-      >
-        <Text style={styles.botaoTexto}>{editando ? 'Salvar alterações' : 'Salvar'}</Text>
-      </TouchableOpacity>
+        desabilitado={!formularioValido}
+        style={{ marginTop: SPACING.lg }}
+      />
 
       <View style={{ height: 40 }} />
     </ScrollView>
@@ -137,24 +143,28 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  voltar: { marginTop: 40, marginBottom: 8 },
-  voltarTexto: { fontSize: 16, color: '#1a3cff', fontWeight: '600' },
-  titulo: { fontSize: 22, fontWeight: 'bold', color: '#222', marginBottom: 8 },
-  secao: { fontSize: 14, fontWeight: '700', color: '#555', marginTop: 16, marginBottom: 8 },
-  input: { backgroundColor: '#f0f0f0', borderRadius: 8, padding: 12, fontSize: 16 },
-  inputMultiline: { height: 100, textAlignVertical: 'top' },
+  container: { flex: 1, backgroundColor: COLORS.background, padding: SPACING.lg },
+  titulo: { fontSize: FONTS.title, fontWeight: 'bold', color: COLORS.textPrimary, marginBottom: SPACING.xs },
+  secao: { fontSize: FONTS.medium, fontWeight: '700', color: COLORS.textSecondary, marginTop: SPACING.lg, marginBottom: SPACING.sm },
+  input: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    padding: SPACING.md,
+    fontSize: FONTS.large,
+    color: COLORS.textPrimary,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    minHeight: 56,
+  },
+  inputMultiline: { height: 120, textAlignVertical: 'top' },
   iconesList: { marginBottom: 4 },
-  iconeOpcao: { alignItems: 'center', padding: 12, marginRight: 8, borderRadius: 12, borderWidth: 2, borderColor: '#e0e0e0', minWidth: 80 },
-  iconeSelecionado: { borderColor: '#1a3cff', backgroundColor: '#eef0ff' },
-  iconeEmoji: { fontSize: 28 },
-  iconeLabel: { fontSize: 11, color: '#555', marginTop: 4, textAlign: 'center' },
+  iconeOpcao: { alignItems: 'center', padding: 12, marginRight: 8, borderRadius: 12, borderWidth: 2, borderColor: COLORS.border, minWidth: 80 },
+  iconeSelecionado: { borderColor: COLORS.primary, backgroundColor: '#eef0ff' },
+  iconeEmoji: { fontSize: 32 },
+  iconeLabel: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 4, textAlign: 'center' },
   diasContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  dia: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, borderColor: '#e0e0e0', justifyContent: 'center', alignItems: 'center' },
-  diaSelecionado: { backgroundColor: '#1a3cff', borderColor: '#1a3cff' },
-  diaTexto: { fontWeight: 'bold', color: '#555' },
-  diaTextoSelecionado: { color: '#fff' },
-  botao: { backgroundColor: '#1a3cff', borderRadius: 8, padding: 16, alignItems: 'center', marginTop: 24 },
-  botaoDesabilitado: { backgroundColor: '#aaa' },
-  botaoTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  dia: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: COLORS.border, justifyContent: 'center', alignItems: 'center' },
+  diaSelecionado: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  diaTexto: { fontWeight: 'bold', color: COLORS.textSecondary, fontSize: FONTS.medium },
+  diaTextoSelecionado: { color: COLORS.white },
 });

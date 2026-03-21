@@ -17,12 +17,16 @@ export default function BotaoVoltar({ onPress }) {
 
 const styles = StyleSheet.create({
   botao: {
-    minHeight: MIN_TOUCH,
-    justifyContent: 'center',
-    alignSelf: 'flex-start',
-    paddingRight: 24,
+    minHeight: MIN_TOUCH + 10,
+    paddingHorizontal: 24,
     marginTop: 40,
-    marginBottom: 8,
+    marginBottom: 16,
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
   },
   texto: {
     fontSize: FONTS.large,
