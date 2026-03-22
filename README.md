@@ -1,4 +1,3 @@
-cat > README.md << 'EOF'
 # Tô Lembrado 💊
 
 Aplicativo mobile de gerenciamento de cuidados para idosos, desenvolvido para cuidadores que precisam organizar medicamentos, horários e rotinas de saúde.
