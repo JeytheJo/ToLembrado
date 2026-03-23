@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import db from '../database/database';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ICONES } from '../assets/icons/icones';
 import BotaoVoltar from '../components/BotaoVoltar';
 import { COLORS, FONTS, SPACING } from '../constants/theme';
-import { ICONES } from '../assets/icons/icones';
+import db from '../database/database';
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import db, { initDatabase } from '../src/database/database';
+import { initDatabase } from '../src/database/database';
+import db from '../src/database/database';
 import CadastroScreen from '../src/screens/CadastroScreen';
+import HomeScreen from '../src/screens/HomeScreen';
 import CadastroTarefaScreen from '../src/screens/CadastroTarefaScreen';
+import MudarPerfilScreen from '../src/screens/MudarPerfilScreen';
 import EditarPerfilScreen from '../src/screens/EditarPerfilScreen';
 import HistoricoScreen from '../src/screens/HistoricoScreen';
-import HomeScreen from '../src/screens/HomeScreen';
-import MudarPerfilScreen from '../src/screens/MudarPerfilScreen';
+import { agendarNotificacoesPerfil, solicitarPermissao } from '../src/services/notificacoes';
 
 export default function Index() {
   const [carregando, setCarregando] = useState(true);
@@ -16,15 +18,25 @@ export default function Index() {
 
   useEffect(() => {
     initDatabase();
+    solicitarPermissao();
     const perfil = db.getFirstSync('SELECT id_usuario FROM perfil_usuario LIMIT 1');
-    if (perfil) setIdUsuario(perfil.id_usuario);
+    if (perfil) {
+      setIdUsuario(perfil.id_usuario);
+      agendarNotificacoesPerfil(perfil.id_usuario);
+    }
     setCarregando(false);
   }, []);
+
+  async function trocarPerfil(id) {
+    setIdUsuario(id);
+    setTela('home');
+    await agendarNotificacoesPerfil(id);
+  }
 
   if (carregando) return null;
 
   if (!idUsuario) {
-    return <CadastroScreen primeroAcesso={true} onCadastro={(id) => { setIdUsuario(id); setTela('home'); }} />;
+    return <CadastroScreen primeroAcesso={true} onCadastro={(id) => { setIdUsuario(id); agendarNotificacoesPerfil(id); setTela('home'); }} />;
   }
 
   if (tela === 'novoPerfil') {
@@ -43,7 +55,7 @@ export default function Index() {
         idUsuarioAtivo={idUsuario}
         onSelecionar={(id) => {
           if (id === 'novo') { setTela('novoPerfil'); }
-          else { setIdUsuario(id); setTela('home'); }
+          else { trocarPerfil(id); }
         }}
         onVoltar={() => setTela('home')}
         onEditarPerfil={(id) => { setIdPerfilEditando(id); setTela('editarPerfil'); }}
@@ -66,7 +78,11 @@ export default function Index() {
       <CadastroTarefaScreen
         idUsuario={idUsuario}
         tarefaExistente={tarefaEditando}
-        onSalvar={() => { setTarefaEditando(null); setTela('home'); }}
+        onSalvar={async (tarefa) => {
+          setTarefaEditando(null);
+          setTela('home');
+          await agendarNotificacoesPerfil(idUsuario);
+        }}
         onVoltar={() => { setTarefaEditando(null); setTela('home'); }}
       />
     );
