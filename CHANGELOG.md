@@ -1,105 +1,108 @@
 # Changelog — Tô Lembrado
 
-Todas as mudanças relevantes do projeto serão documentadas aqui.
+All notable changes to this project will be documented here.
+
+---
+
+## [0.5.0] — 2026-03-23
+### Added
+- EAS Build configured for Android development build
+- Local notifications working on physical device
+- Weekly scheduling per task and day of the week
+- Notification permission request on first launch
+- `expo-notifications` and `expo-dev-client` installed and configured
+
+### Fixed
+- Removed `org.gradle.java.home` from `gradle.properties` causing EAS Build failure
+- Removed unused `react-native-reanimated` dependency blocking native compilation
 
 ---
 
 ## [0.4.0] — 2026-03-23
-### Adicionado
-- Tela de histórico dos últimos 7 dias com status por tarefa
-- Botão de acesso ao histórico (📋) na tela inicial
-- Agrupamento por dia com resumo de tarefas realizadas vs total
-- Expansão/colapso por dia no histórico
-
-### Adicionado
-- Serviço de notificações locais (`src/services/notificacoes.js`)
-- Agendamento semanal por dia da semana por tarefa
-- Solicitação de permissão de notificação no primeiro acesso
-- Instalação do `expo-notifications` e `expo-dev-client`
-
-### Infraestrutura
-- Configuração do Android SDK e `local.properties`
-- Tentativa de build nativo via `npx expo run:android`
-- Remoção do `react-native-reanimated` (não utilizado)
-- Configuração do Java 21 para compilação Gradle
+### Added
+- History screen showing the last 7 days with task status per day
+- History access button (📋) on the home screen
+- Day grouping with summary of completed vs total tasks
+- Expand/collapse per day in the history screen
+- Notifications service (`src/services/notificacoes.js`)
+- Native Android build setup with Android SDK and `local.properties`
 
 ---
 
 ## [0.3.0] — 2026-03-22
-### Adicionado
-- Tela de cadastro de perfil unificada com tela de edição
-- Logo e saudação no primeiro acesso
-- Botão Voltar visível na tela de adicionar novo perfil
-- Campos opcionais: descrição e observações gerais no perfil
-- Indicação visual de campos obrigatórios com asterisco (*)
+### Added
+- Unified profile creation and editing screen
+- Logo and greeting message on first launch
+- Optional fields: description and general observations on profile
+- Visual indicator for required fields with asterisk (*)
+- Back button visible on the add new profile screen
 
-### Alterado
-- `CadastroScreen` agora suporta prop `primeroAcesso` para alternar layout
-- Fluxo de "Adicionar novo perfil" redireciona para a mesma tela de cadastro
+### Changed
+- `CadastroScreen` now supports `primeroAcesso` prop to switch layout
+- "Add new profile" flow redirects to the same registration screen
 
 ---
 
 ## [0.2.0] — 2026-03-21
-### Adicionado
-- Tema global de acessibilidade (`src/constants/theme.js`)
-  - Fontes maiores (mínimo 16px, padrão 18-22px)
-  - Altura mínima de toque de 56px em todos os botões
-  - Paleta de cores com alto contraste
-- Componente `BotaoAcessivel` reutilizável com variantes (primário, secundário, perigo)
-- Componente `BotaoVoltar` com borda e tamanho acessível
-- Tela de seleção e gerenciamento de perfis (`MudarPerfilScreen`)
-  - Avatar com inicial do nome
-  - Indicador de perfil ativo
-  - Botões de editar (✏️) e excluir (🗑️) por perfil
-  - Proteção contra exclusão do único perfil
-- Tela de edição de perfil (`EditarPerfilScreen`)
-  - Edição de nome, idade, descrição e observações gerais
-  - Validação de campos obrigatórios
-- Cards de tarefa com emoji do ícone visível
-- Menu de três pontos (⋮) nos cards com opções de editar e excluir
-- Confirmação antes de excluir tarefa
-- Suporte a edição de tarefa existente no `CadastroTarefaScreen`
+### Added
+- Global accessibility theme (`src/constants/theme.js`)
+  - Larger fonts (minimum 16px, default 18-22px)
+  - Minimum touch target height of 56px on all buttons
+  - High contrast color palette
+- Reusable `BotaoAcessivel` component with variants (primary, secondary, danger)
+- Accessible `BotaoVoltar` component with border and larger size
+- Profile selection and management screen (`MudarPerfilScreen`)
+  - Avatar with first letter of the name
+  - Active profile indicator
+  - Edit (✏️) and delete (🗑️) buttons per profile
+  - Protection against deleting the only profile
+- Profile editing screen (`EditarPerfilScreen`)
+  - Edit name, age, description and general observations
+  - Required field validation
+- Task cards with visible emoji icon
+- Three-dot menu (⋮) on cards with edit and delete options
+- Confirmation dialog before deleting a task
+- Support for editing existing tasks in `CadastroTarefaScreen`
 
-### Alterado
-- `CadastroScreen` aplicado padrão de acessibilidade
-- `CadastroTarefaScreen` usa `BotaoVoltar` e `BotaoAcessivel`
-- Cards da home exibem emoji do ícone e destacam tarefas concluídas
+### Changed
+- `CadastroScreen` updated with accessibility standards
+- `CadastroTarefaScreen` uses `BotaoVoltar` and `BotaoAcessivel`
+- Home screen cards display emoji icon and highlight completed tasks
 
 ---
 
 ## [0.1.0] — 2026-03-20
-### Adicionado
-- Estrutura inicial do projeto com Expo + React Native (JavaScript)
-- Banco de dados SQLite local com 3 tabelas:
-  - `perfil_usuario` — dados do idoso
-  - `medicamento` — tarefas e medicamentos com horário e frequência
-  - `historico_uso` — registro de execuções por data
-- Tela de primeiro acesso / cadastro de perfil (`CadastroScreen`)
-  - Botão desabilitado até preenchimento dos campos obrigatórios
-- Tela inicial (`HomeScreen`)
-  - Listagem de tarefas do dia agrupadas por período (Manhã, Tarde, Noite)
-  - Filtro por dia da semana via `frequencia_dias`
-  - Marcar tarefa como feita ou não realizada
-  - Botão flutuante (+) para adicionar tarefa
-- Tela de cadastro de tarefa (`CadastroTarefaScreen`)
-  - Seleção de ícone (💊 🩺 💧 🍽️ 🩹)
-  - Título, instrução rápida, horário, dias da semana e descrição
-  - Validação de campos obrigatórios
-- Sistema de navegação por estados no `app/index.jsx`
-- Repositório Git configurado e publicado no GitHub
+### Added
+- Initial project setup with Expo + React Native (JavaScript)
+- Local SQLite database with 3 tables:
+  - `perfil_usuario` — elderly person data
+  - `medicamento` — tasks and medications with schedule and frequency
+  - `historico_uso` — execution records by date
+- First access / profile registration screen (`CadastroScreen`)
+  - Button disabled until required fields are filled
+- Home screen (`HomeScreen`)
+  - Task listing for the day grouped by period (Morning, Afternoon, Night)
+  - Day of the week filter via `frequencia_dias`
+  - Mark task as done or not done
+  - Floating action button (+) to add task
+- Task registration screen (`CadastroTarefaScreen`)
+  - Icon selection (💊 🩺 💧 🍽️ 🩹)
+  - Title, quick instruction, time, days of the week and description
+  - Required field validation
+- State-based navigation system in `app/index.jsx`
+- Git repository configured and published on GitHub
 
-### Infraestrutura
+### Infrastructure
 - Node.js v22, Expo SDK 54
-- Dependências: `expo-sqlite`, `expo-file-system`, `@react-navigation/native`
-- Estrutura de pastas: `src/screens`, `src/components`, `src/database`, `src/assets`, `src/constants`
-- `.gitignore` configurado
-- `README.md` personalizado
+- Dependencies: `expo-sqlite`, `expo-file-system`, `@react-navigation/native`
+- Folder structure: `src/screens`, `src/components`, `src/database`, `src/assets`, `src/constants`
+- `.gitignore` configured
+- Custom `README.md`
 
 ---
 
-## Próximos passos
-- [ ] Publicar build de desenvolvimento via EAS Build
-- [ ] Testar notificações locais no dispositivo físico
-- [ ] Publicar na Google Play Store
-- [ ] Adicionar foto de perfil
-- [ ] Tutorial interativo (onboarding) para primeiro acesso
+## Upcoming
+- [ ] Publish to Google Play Store
+- [ ] Add profile photo support
+- [ ] Interactive onboarding tutorial for first-time users
+- [ ] Dark mode support
