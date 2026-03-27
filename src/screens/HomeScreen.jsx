@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ICONES } from '../assets/icons/icones';
 import { COLORS } from '../constants/theme';
 import db from '../database/database';
@@ -113,7 +113,11 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
               return (
                 <View key={tarefa.id_medicamento} style={[styles.card, feito && styles.cardFeito]}>
                   <View style={styles.cardTopo}>
-                    <Text style={styles.cardEmoji}>{icone.emoji}</Text>
+                    {icone.imagem ? (
+                      <Image source={icone.imagem} style={styles.cardIconeImagem} />
+                    ) : (
+                      <Text style={styles.cardEmoji}>{icone.emoji}</Text>
+                    )}
                     <View style={styles.cardTextos}>
                       <Text style={styles.cardTitulo}>{tarefa.titulo}</Text>
                       <Text style={styles.cardSubtitulo}>{tarefa.subtitulo_instrucao}</Text>
@@ -222,4 +226,5 @@ const styles = StyleSheet.create({
   headerBotoes: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   botaoSecundario: { backgroundColor: COLORS.surface, borderRadius: 8, padding: 10, borderWidth: 2, borderColor: COLORS.primary },
   botaoSecundarioTexto: { fontSize: 20 },
+  cardIconeImagem: { width: 40, height: 40, resizeMode: 'contain', marginRight: 12 },
 });

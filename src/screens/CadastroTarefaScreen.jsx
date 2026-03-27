@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   Alert,
+  Image,
   ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity,
   View
@@ -70,7 +71,12 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
             style={[styles.iconeOpcao, icone === item.key && styles.iconeSelecionado]}
             onPress={() => setIcone(item.key)}
           >
-            <Text style={styles.iconeEmoji}>{item.emoji}</Text>
+            {item.imagem ? (
+              <Image source={item.imagem} style={styles.iconeImagem} />
+            ) : (
+              <Text style={styles.iconeEmoji}>{item.emoji}</Text>
+            )}
+
             <Text style={styles.iconeLabel}>{item.label}</Text>
           </TouchableOpacity>
         ))}
@@ -167,4 +173,5 @@ const styles = StyleSheet.create({
   diaSelecionado: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
   diaTexto: { fontWeight: 'bold', color: COLORS.textSecondary, fontSize: FONTS.medium },
   diaTextoSelecionado: { color: COLORS.white },
+  iconeImagem: { width: 36, height: 36, resizeMode: 'contain'},
 });
