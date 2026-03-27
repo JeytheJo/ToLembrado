@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Alert, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ICONES } from '../assets/icons/icones';
-import { COLORS } from '../constants/theme';
+import { COLORS, FONTS, SPACING } from '../constants/theme';
 import db from '../database/database';
 
 const PERIODOS = [
@@ -10,7 +10,7 @@ const PERIODOS = [
   { label: 'Pela Noite', inicio: 18, fim: 23 },
 ];
 
-export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMudarPerfil, onHistorico }) {
+export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMudarPerfil, onHistorico, onEditarPerfil }) {
   const [tarefas, setTarefas] = useState([]);
   const [perfil, setPerfil] = useState(null);
   const [menuTarefa, setMenuTarefa] = useState(null);
@@ -88,12 +88,25 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
+
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.saudacao}>Olá, {perfil?.name} 👋</Text>
-        <View style={styles.headerBotoes}>
-          <TouchableOpacity style={styles.botaoSecundario} onPress={onHistorico}>
-            <Text style={styles.botaoSecundarioTexto}>📋</Text>
+        <View style={styles.headerEsq}>
+          <View style={styles.avatarPequeno}>
+            <TouchableOpacity 
+            style={styles.headerEsq} 
+            onPress={onEditarPerfil} 
+            activeOpacity={0.7}
+          >
+            <Text style={styles.avatarPequenoTexto}>👤</Text>
+          </TouchableOpacity>
+          </View>
+          <Text style={styles.saudacao}>Olá, {perfil?.name}</Text>
+        </View>
+        <View style={styles.headerDir}>
+          <TouchableOpacity style={styles.botaoIcone} onPress={onHistorico}>
+            <Text style={styles.botaoIconeTexto}>📋</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.botaoMudar} onPress={onMudarPerfil}>
             <Text style={styles.botaoMudarTexto}>Mudar Perfil</Text>
@@ -101,6 +114,7 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
         </View>
       </View>
 
+      {/* Lista de tarefas */}
       {PERIODOS.map(periodo => {
         const lista = getTarefasPorPeriodo(periodo.inicio, periodo.fim);
         if (lista.length === 0) return null;
@@ -123,10 +137,7 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
                       <Text style={styles.cardSubtitulo}>{tarefa.subtitulo_instrucao}</Text>
                       <Text style={styles.cardHorario}>{tarefa.horario_programado}</Text>
                     </View>
-                    <TouchableOpacity
-                      style={styles.menuBotao}
-                      onPress={() => setMenuTarefa(tarefa)}
-                    >
+                    <TouchableOpacity style={styles.menuBotao} onPress={() => setMenuTarefa(tarefa)}>
                       <Text style={styles.menuPontos}>⋮</Text>
                     </TouchableOpacity>
                   </View>
@@ -135,7 +146,7 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
                     onPress={() => marcarStatus(tarefa.id_medicamento, feito ? 'pendente' : 'feito')}
                   >
                     <Text style={styles.botaoStatusTexto}>
-                      {feito ? 'Feito! ✓' : 'Não Realizado'}
+                      {feito ? 'Feito! ✓' : 'Não realizada!'}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -145,20 +156,22 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
         );
       })}
 
+      {/* Tela vazia */}
       {tarefas.length === 0 && (
         <View style={styles.vazio}>
-          <Text style={styles.vazioTexto}>Nenhuma tarefa para hoje!</Text>
-          <Text style={styles.vazioSub}>Toque em + para adicionar</Text>
+          <Text style={styles.vazioTitulo}>Nenhuma tarefa para hoje!</Text>
+          <Text style={styles.vazioSub}>Toque em <Text style={styles.vazioPlus}>+</Text> para adicionar um lembrete</Text>
         </View>
       )}
 
+      {/* FAB */}
       <TouchableOpacity style={styles.fab} onPress={onAddTarefa}>
         <Text style={styles.fabTexto}>+</Text>
       </TouchableOpacity>
 
       <View style={{ height: 80 }} />
 
-      {/* Menu de opções da tarefa */}
+      {/* Modal menu */}
       <Modal
         visible={!!menuTarefa}
         transparent
@@ -167,13 +180,10 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
       >
         <TouchableOpacity style={styles.modalOverlay} onPress={() => setMenuTarefa(null)}>
           <View style={styles.modalBox}>
-            <Text style={styles.modalTitulo}>{menuTarefa?.titulo}</Text>
+            <Text style={styles.modalData}>Hoje</Text>
             <TouchableOpacity
               style={styles.modalOpcao}
-              onPress={() => {
-                setMenuTarefa(null);
-                onEditTarefa(menuTarefa);
-              }}
+              onPress={() => { setMenuTarefa(null); onEditTarefa(menuTarefa); }}
             >
               <Text style={styles.modalOpcaoTexto}>✏️ Editar tarefa</Text>
             </TouchableOpacity>
@@ -182,49 +192,89 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
               style={styles.modalOpcao}
               onPress={() => excluirTarefa(menuTarefa?.id_medicamento)}
             >
-              <Text style={[styles.modalOpcaoTexto, styles.modalExcluir]}>🗑️ Excluir tarefa</Text>
+              <Text style={[styles.modalOpcaoTexto, styles.modalExcluir]}>🗑️ Excluir Tarefa</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </Modal>
+
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, paddingTop: 48 },
-  saudacao: { fontSize: 18, fontWeight: 'bold', color: '#222' },
-  botaoMudar: { backgroundColor: '#1a3cff', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
-  botaoMudarTexto: { color: '#fff', fontSize: 13, fontWeight: 'bold' },
-  periodoTitulo: { fontSize: 15, fontWeight: 'bold', color: '#555', paddingHorizontal: 20, paddingVertical: 8 },
-  card: { marginHorizontal: 16, marginBottom: 12, borderRadius: 12, borderWidth: 1, borderColor: '#e0e0e0', padding: 16 },
-  cardFeito: { borderColor: '#1a3cff', backgroundColor: '#f0f4ff' },
+  container: { flex: 1, backgroundColor: COLORS.background },
+  conteudo: { paddingBottom: 80 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingTop: 48,
+    paddingBottom: SPACING.md,
+  },
+  headerEsq: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  avatarPequeno: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center' },
+  avatarPequenoTexto: { fontSize: 20 },
+  saudacao: { fontSize: FONTS.large, fontWeight: 'bold', color: COLORS.textPrimary },
+  headerDir: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  botaoIcone: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: COLORS.surface,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  botaoIconeTexto: { fontSize: 18 },
+  botaoMudar: { backgroundColor: COLORS.primary, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
+  botaoMudarTexto: { color: COLORS.white, fontSize: FONTS.medium, fontWeight: 'bold' },
+  periodoTitulo: { fontSize: FONTS.medium, fontWeight: 'bold', color: COLORS.textSecondary, paddingHorizontal: SPACING.lg, paddingVertical: 8 },
+  card: {
+    marginHorizontal: SPACING.lg,
+    marginBottom: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    padding: SPACING.md,
+  },
+  cardFeito: { borderColor: COLORS.primary, backgroundColor: '#f0f4ff' },
   cardTopo: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  cardEmoji: { fontSize: 36, marginRight: 12 },
-  cardTextos: { flex: 1 },
-  cardTitulo: { fontSize: 16, fontWeight: 'bold', color: '#222' },
-  cardSubtitulo: { fontSize: 13, color: '#666', marginTop: 2 },
-  cardHorario: { fontSize: 14, fontWeight: '600', color: '#1a3cff', marginTop: 4 },
-  menuBotao: { padding: 8 },
-  menuPontos: { fontSize: 22, color: '#1a3cff', fontWeight: 'bold' },
-  botaoStatus: { backgroundColor: '#e0e0e0', borderRadius: 8, padding: 10, alignItems: 'center' },
-  botaoFeito: { backgroundColor: '#1a3cff' },
-  botaoStatusTexto: { color: '#fff', fontWeight: 'bold' },
-  vazio: { alignItems: 'center', marginTop: 80 },
-  vazioTexto: { fontSize: 18, fontWeight: 'bold', color: '#555' },
-  vazioSub: { fontSize: 14, color: '#aaa', marginTop: 8 },
-  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: '#1a3cff', justifyContent: 'center', alignItems: 'center', elevation: 5 },
-  fabTexto: { color: '#fff', fontSize: 32, lineHeight: 36 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
-  modalBox: { backgroundColor: '#fff', borderRadius: 16, padding: 8, width: 260, elevation: 8 },
-  modalTitulo: { fontSize: 14, fontWeight: 'bold', color: '#888', padding: 12, paddingBottom: 8 },
-  modalDivisor: { height: 1, backgroundColor: '#f0f0f0' },
-  modalOpcao: { padding: 16 },
-  modalOpcaoTexto: { fontSize: 16, color: '#222' },
-  modalExcluir: { color: '#e53935' },
-  headerBotoes: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  botaoSecundario: { backgroundColor: COLORS.surface, borderRadius: 8, padding: 10, borderWidth: 2, borderColor: COLORS.primary },
-  botaoSecundarioTexto: { fontSize: 20 },
+  cardEmoji: { fontSize: 40, marginRight: 12 },
   cardIconeImagem: { width: 40, height: 40, resizeMode: 'contain', marginRight: 12 },
+  cardTextos: { flex: 1 },
+  cardTitulo: { fontSize: FONTS.large, fontWeight: 'bold', color: COLORS.textPrimary },
+  cardSubtitulo: { fontSize: FONTS.medium, color: COLORS.textSecondary, marginTop: 2 },
+  cardHorario: { fontSize: FONTS.medium, fontWeight: '600', color: COLORS.primary, marginTop: 4 },
+  menuBotao: { padding: 8 },
+  menuPontos: { fontSize: 24, color: COLORS.primary, fontWeight: 'bold' },
+  botaoStatus: { backgroundColor: COLORS.border, borderRadius: 8, padding: 12, alignItems: 'center' },
+  botaoFeito: { backgroundColor: COLORS.primary },
+  botaoStatusTexto: { color: COLORS.white, fontWeight: 'bold', fontSize: FONTS.medium },
+  vazio: { alignItems: 'center', marginTop: 80, paddingHorizontal: SPACING.lg },
+  vazioTitulo: { fontSize: FONTS.xlarge, fontWeight: 'bold', color: COLORS.textPrimary, textAlign: 'center', marginBottom: SPACING.sm },
+  vazioSub: { fontSize: FONTS.large, color: COLORS.textSecondary, textAlign: 'center' },
+  vazioPlus: { color: COLORS.primary, fontWeight: 'bold' },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  fabTexto: { color: COLORS.white, fontSize: 32, lineHeight: 36 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center' },
+  modalBox: { backgroundColor: COLORS.white, borderRadius: 16, width: 292, elevation: 8, overflow: 'hidden' },
+  modalData: { fontSize: FONTS.small, fontWeight: 'bold', color: COLORS.textMuted, padding: SPACING.md, paddingBottom: 8 },
+  modalDivisor: { height: 1, backgroundColor: COLORS.surface },
+  modalOpcao: { padding: SPACING.lg },
+  modalOpcaoTexto: { fontSize: FONTS.large, color: COLORS.textPrimary },
+  modalExcluir: { color: COLORS.danger },
 });
