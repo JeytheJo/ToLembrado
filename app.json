@@ -55,7 +55,8 @@
           "color": "#1a3cff",
           "sounds": []
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

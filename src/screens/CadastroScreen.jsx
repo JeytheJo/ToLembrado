@@ -1,18 +1,25 @@
+import { Modak_400Regular, useFonts } from '@expo-google-fonts/modak';
 import { useState } from 'react';
 import {
-  View, Text, TextInput, ScrollView,
-  StyleSheet, Alert, Image
+  Alert, Image,
+  ScrollView,
+  StyleSheet,
+  Text, TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import db from '../database/database';
 import BotaoAcessivel from '../components/BotaoAcessivel';
 import BotaoVoltar from '../components/BotaoVoltar';
-import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../constants/theme';
+import { COLORS, FONTS, MIN_TOUCH, SPACING } from '../constants/theme';
+import db from '../database/database';
 
 export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = true }) {
   const [nome, setNome] = useState('');
   const [idade, setIdade] = useState('');
   const [descricao, setDescricao] = useState('');
-  const [observacoes, setObservacoes] = useState('');
+
+  const [fontLoaded] = useFonts({ Modak_400Regular });
+  if (!fontLoaded) return null;
 
   const formularioValido = nome.trim().length > 0 && idade.trim().length > 0;
 
@@ -27,8 +34,8 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
       return;
     }
     db.runSync(
-      'INSERT INTO perfil_usuario (name, idade, descricao, observacoes_gerais) VALUES (?, ?, ?, ?)',
-      [nome.trim(), idade.trim(), descricao.trim(), observacoes.trim()]
+      'INSERT INTO perfil_usuario (name, idade, descricao) VALUES (?, ?, ?)',
+      [nome.trim(), idade.trim(), descricao.trim()]
     );
     const novo = db.getFirstSync('SELECT id_usuario FROM perfil_usuario ORDER BY id_usuario DESC LIMIT 1');
     onCadastro(novo.id_usuario);
@@ -36,31 +43,45 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
+      {!primeroAcesso && <BotaoVoltar onPress={onVoltar} />}
+
+      {primeroAcesso && (
+        <View style={styles.logoContainer}>
+          <Image
+            source={require('../../assets/images/icon.png')}
+            style={styles.logoIcone}
+          />
+          <View style={styles.logoTextoContainer}>
+            <Text style={styles.logoTo}>Tô </Text>
+            <Text style={styles.logoLembrado}>Lembrado</Text>
+          </View>
+        </View>
+      )}
+
       {primeroAcesso ? (
         <>
-          <Image source={require('../../src/assets/icons/logo.png')} style={styles.logo} />
-          <Text style={styles.tituloPrimeiro}>Olá! Vamos começar?</Text>
+          <Text style={styles.tituloPrimeiro}>Olá! Vamos Começar?</Text>
           <Text style={styles.subtituloPrimeiro}>Cadastre o primeiro perfil para continuar</Text>
         </>
       ) : (
-        <>
-          <BotaoVoltar onPress={onVoltar} />
-          <Text style={styles.titulo}>Novo Perfil</Text>
-        </>
+        <Text style={styles.titulo}>Novo Perfil</Text>
       )}
 
-      <View style={styles.avatarContainer}>
+      <TouchableOpacity style={styles.avatarContainer} activeOpacity={0.8}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarTexto}>
-            {nome.charAt(0).toUpperCase() || '?'}
-          </Text>
+          {nome.trim().length > 0 ? (
+            <Text style={styles.avatarLetra}>{nome.charAt(0).toUpperCase()}</Text>
+          ) : (
+            <Text style={styles.avatarQuestao}>?</Text>
+          )}
         </View>
-      </View>
+        <Text style={styles.avatarDica}>Adicionar foto de perfil?</Text>
+      </TouchableOpacity>
 
       <Text style={styles.secao}>Nome <Text style={styles.obrigatorio}>*</Text></Text>
       <TextInput
         style={styles.input}
-        placeholder="Nome do idoso"
+        placeholder="Nome do idoso ou usuário"
         placeholderTextColor={COLORS.textMuted}
         value={nome}
         onChangeText={setNome}
@@ -70,7 +91,7 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
       <Text style={styles.secao}>Idade <Text style={styles.obrigatorio}>*</Text></Text>
       <TextInput
         style={styles.input}
-        placeholder="Idade"
+        placeholder="Idade do idoso ou usuário"
         placeholderTextColor={COLORS.textMuted}
         keyboardType="numeric"
         value={idade}
@@ -89,18 +110,7 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
         numberOfLines={3}
       />
 
-      <Text style={styles.secao}>Observações gerais</Text>
-      <TextInput
-        style={[styles.input, styles.inputMultiline]}
-        placeholder="Ex: Alérgico a dipirona, usa marca-passo..."
-        placeholderTextColor={COLORS.textMuted}
-        value={observacoes}
-        onChangeText={setObservacoes}
-        multiline
-        numberOfLines={4}
-      />
-
-      <Text style={styles.dica}>* Campos obrigatórios</Text>
+      <Text style={styles.camposObrigatorios}>* Campos Obrigatórios</Text>
 
       <BotaoAcessivel
         titulo={primeroAcesso ? 'Salvar e Continuar' : 'Salvar'}
@@ -117,9 +127,13 @@ export default function CadastroScreen({ onCadastro, onVoltar, primeroAcesso = t
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background },
   conteudo: { padding: SPACING.lg },
-  logo: { width: 120, height: 120, alignSelf: 'center', marginTop: SPACING.xl, marginBottom: SPACING.md, resizeMode: 'contain' },
+  logoContainer: { alignItems: 'center', marginTop: SPACING.lg, marginBottom: SPACING.md },
+  logoIcone: { width: 80, height: 80, resizeMode: 'contain' },
+  logoTextoContainer: { flexDirection: 'row', alignItems: 'center', marginTop: SPACING.xs },
+  logoTo: { fontSize: FONTS.xlarge, fontFamily: 'Modak_400Regular', color: '#1A3CFF' },
+  logoLembrado: { fontSize: FONTS.xlarge, fontFamily: 'Modak_400Regular', color: '#FF7474' },
   tituloPrimeiro: { fontSize: FONTS.title, fontWeight: 'bold', color: COLORS.textPrimary, textAlign: 'center', marginBottom: SPACING.xs },
-  subtituloPrimeiro: { fontSize: FONTS.medium, color: COLORS.textSecondary, textAlign: 'center', marginBottom: SPACING.lg },
+  subtituloPrimeiro: { fontSize: FONTS.medium, color: COLORS.textSecondary, textAlign: 'center', marginBottom: SPACING.md },
   titulo: { fontSize: FONTS.title, fontWeight: 'bold', color: COLORS.textPrimary, marginBottom: SPACING.lg },
   avatarContainer: { alignItems: 'center', marginBottom: SPACING.lg },
   avatar: {
@@ -129,11 +143,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: SPACING.xs,
   },
-  avatarTexto: { fontSize: 48, color: COLORS.white, fontWeight: 'bold' },
+  avatarLetra: { fontSize: 48, color: COLORS.white, fontWeight: 'bold' },
+  avatarQuestao: { fontSize: 48, color: COLORS.white, fontWeight: 'bold' },
+  avatarDica: { fontSize: FONTS.medium, color: COLORS.textSecondary },
   secao: { fontSize: FONTS.medium, fontWeight: '700', color: COLORS.textSecondary, marginTop: SPACING.lg, marginBottom: SPACING.sm },
   obrigatorio: { color: COLORS.danger },
-  dica: { fontSize: FONTS.small, color: COLORS.textMuted, marginTop: SPACING.sm },
+  camposObrigatorios: { fontSize: FONTS.small, color: COLORS.danger, marginTop: SPACING.md },
   input: {
     backgroundColor: COLORS.surface,
     borderRadius: 12,
@@ -144,5 +161,5 @@ const styles = StyleSheet.create({
     borderColor: COLORS.border,
     minHeight: MIN_TOUCH,
   },
-  inputMultiline: { height: 100, textAlignVertical: 'top' },
+  inputMultiline: { height: 136, textAlignVertical: 'top' },
 });
