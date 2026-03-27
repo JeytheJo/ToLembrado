@@ -1,5 +1,4 @@
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { COLORS, FONTS, MIN_TOUCH } from '../constants/theme';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function BotaoVoltar({ onPress }) {
   return (
@@ -17,20 +16,21 @@ export default function BotaoVoltar({ onPress }) {
 
 const styles = StyleSheet.create({
   botao: {
-    minHeight: MIN_TOUCH + 10,
-    paddingHorizontal: 24,
-    marginTop: 40,
-    marginBottom: 16,
-    alignSelf: 'flex-start',
-    justifyContent: 'center',
-    backgroundColor: COLORS.surface,
+    width: 140,
+    height: 57,
+    marginTop: 56,
+    marginBottom: 22,
+    marginLeft: 2,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: COLORS.primary,
+    borderColor: '#1A3CFF',
+    backgroundColor: 'rgba(161, 175, 255, 0.16)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   texto: {
-    fontSize: FONTS.large,
-    color: COLORS.primary,
+    fontSize: 18,
+    color: '#1A3CFF',
     fontWeight: 'bold',
   },
 });

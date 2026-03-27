@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
-  Alert,
-  Image,
+  Alert, Image,
   ScrollView, StyleSheet,
   Text, TextInput, TouchableOpacity,
   View
@@ -25,7 +24,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
   const [diasSelecionados, setDiasSelecionados] = useState(
     tarefaExistente?.frequencia_dias
       ? tarefaExistente.frequencia_dias.split('').map(Number)
-      : [1,1,1,1,1,1,1]
+      : [0,0,0,0,0,0,]
   );
 
   const formularioValido = titulo.trim().length > 0 && horario.trim().length > 0;
@@ -76,13 +75,12 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
             ) : (
               <Text style={styles.iconeEmoji}>{item.emoji}</Text>
             )}
-
             <Text style={styles.iconeLabel}>{item.label}</Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
 
-      <Text style={styles.secao}>Título</Text>
+      <Text style={styles.secao}>Adicione o Título da Tarefa</Text>
       <TextInput
         style={styles.input}
         placeholder="Ex: Remédio da manhã"
@@ -94,7 +92,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
       <Text style={styles.secao}>Instrução rápida</Text>
       <TextInput
         style={styles.input}
-        placeholder="Ex: Antes do café"
+        placeholder="Ex: Antes da manhã"
         placeholderTextColor={COLORS.textMuted}
         value={subtitulo}
         onChangeText={setSubtitulo}
@@ -143,7 +141,7 @@ export default function CadastroTarefaScreen({ idUsuario, tarefaExistente, onSal
         style={{ marginTop: SPACING.lg }}
       />
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 57 }} />
     </ScrollView>
   );
 }
@@ -164,14 +162,33 @@ const styles = StyleSheet.create({
   },
   inputMultiline: { height: 120, textAlignVertical: 'top' },
   iconesList: { marginBottom: 4 },
-  iconeOpcao: { alignItems: 'center', padding: 12, marginRight: 8, borderRadius: 12, borderWidth: 2, borderColor: COLORS.border, minWidth: 80 },
+  iconeOpcao: {
+    alignItems: 'center',
+    padding: SPACING.sm,
+    marginRight: SPACING.sm,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    width: 110,
+    height: 110,
+    justifyContent: 'center',
+  },
   iconeSelecionado: { borderColor: COLORS.primary, backgroundColor: '#eef0ff' },
-  iconeEmoji: { fontSize: 32 },
-  iconeLabel: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 4, textAlign: 'center' },
+  iconeEmoji: { fontSize: 40 },
+  iconeImagem: { width: 48, height: 48, resizeMode: 'contain' },
+  iconeLabel: { fontSize: FONTS.small, color: COLORS.textSecondary, marginTop: 6, textAlign: 'center' },
   diasContainer: { flexDirection: 'row', justifyContent: 'space-between' },
-  dia: { width: 44, height: 44, borderRadius: 22, borderWidth: 2, borderColor: COLORS.border, justifyContent: 'center', alignItems: 'center' },
-  diaSelecionado: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  dia: {
+    width: 41,
+    height: 41,
+    borderRadius: 21,
+    backgroundColor: COLORS.surface,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  diaSelecionado: { backgroundColor: COLORS.primary },
   diaTexto: { fontWeight: 'bold', color: COLORS.textSecondary, fontSize: FONTS.medium },
   diaTextoSelecionado: { color: COLORS.white },
-  iconeImagem: { width: 36, height: 36, resizeMode: 'contain'},
 });
