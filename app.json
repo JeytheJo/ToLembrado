@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Tô Lembrado",
-    "slug": "MedLembrete",
+    "slug": "ToLembrado",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -60,6 +60,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "665b55fd-0409-4fa8-802d-2a5b6e970c4b"
+      }
     }
   }
 }
