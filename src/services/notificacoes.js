@@ -9,13 +9,26 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Registra o canal de notificação com ação clicável
 export async function configurarCanal() {
+  // Canal Android com ícone
+  await Notifications.setNotificationChannelAsync('tarefas', {
+    name: 'Lembretes de Tarefas',
+    importance: Notifications.AndroidImportance.HIGH,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: '#1A3CFF',
+    sound: true,
+  });
+
+  // Categoria com botão de ação
   await Notifications.setNotificationCategoryAsync('tarefa', [
     {
       identifier: 'MARCAR_FEITO',
-      buttonTitle: 'Tarefa realizada',
-      options: { opensAppToForeground: false },
+      buttonTitle: '✓ Marcar como Feito',
+      options: {
+        opensAppToForeground: false,
+        isDestructive: false,
+        isAuthenticationRequired: false,
+      },
     },
   ]);
 }
@@ -25,6 +38,30 @@ export async function solicitarPermissao() {
   if (existente === 'granted') return true;
   const { status } = await Notifications.requestPermissionsAsync();
   return status === 'granted';
+}
+
+export async function marcarTarefaFeita(idMedicamento) {
+  const hoje = new Date().toISOString().split('T')[0];
+  const agora = new Date().toTimeString().slice(0, 5);
+  const existe = db.getFirstSync(
+    'SELECT id_registro FROM historico_uso WHERE id_medicamento = ? AND data_execucao = ?',
+    [idMedicamento, hoje]
+  );
+  if (existe) {
+    db.runSync(
+      'UPDATE historico_uso SET status = ?, horario_confirmacao = ? WHERE id_registro = ?',
+      ['feito', agora, existe.id_registro]
+    );
+  } else {
+    db.runSync(
+      'INSERT INTO historico_uso (id_medicamento, data_execucao, status, horario_confirmacao) VALUES (?, ?, ?, ?)',
+      [idMedicamento, hoje, 'feito', agora]
+    );
+  }
+  // Cancela a notificação após marcar como feito
+  await Notifications.dismissNotificationAsync(
+    `tarefa_${idMedicamento}_dia_${new Date().getDay()}`
+  ).catch(() => {});
 }
 
 export async function agendarNotificacoesPerfil(idUsuario) {
@@ -55,6 +92,11 @@ export async function agendarNotificacaoTarefa(tarefa) {
         body: tarefa.subtitulo_instrucao || 'Hora de realizar esta tarefa!',
         sound: true,
         categoryIdentifier: 'tarefa',
+        android: {
+          channelId: 'tarefas',
+          smallIcon: 'notification_icon',
+          color: '#1A3CFF',
+        },
         data: { idMedicamento: tarefa.id_medicamento },
       },
       trigger: {
@@ -63,6 +105,7 @@ export async function agendarNotificacaoTarefa(tarefa) {
         hour: hora,
         minute: minuto,
         repeats: true,
+        channelId: 'tarefas',
       },
     });
   }

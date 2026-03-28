@@ -172,6 +172,16 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.background, padding: SPACING.lg },
   titulo: { fontSize: FONTS.title, fontWeight: 'bold', color: COLORS.textPrimary, marginBottom: SPACING.xs },
   secao: { fontSize: FONTS.medium, fontWeight: '700', color: COLORS.textSecondary, marginTop: SPACING.lg, marginBottom: SPACING.sm },
+  input: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    padding: SPACING.md,
+    fontSize: FONTS.large,
+    color: COLORS.textPrimary,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    minHeight: 56,
+  },
   inputHorario: {
     backgroundColor: COLORS.surface,
     borderRadius: 12,
@@ -182,7 +192,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 inputHorarioTexto: { fontSize: FONTS.large, color: COLORS.textPrimary },
-  inputMultiline: { height: 120, textAlignVertical: 'top' },
+  inputMultiline: { 
+    height: 120, 
+    textAlignVertical: 'top',
+    borderWidth: 2,
+    borderColor: COLORS.border,
+  },
   iconesList: { marginBottom: 4 },
   iconeOpcao: {
     alignItems: 'center',
