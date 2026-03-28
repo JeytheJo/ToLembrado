@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import db from '../database/database';
-import BotaoVoltar from '../components/BotaoVoltar';
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import BotaoAcessivel from '../components/BotaoAcessivel';
-import { COLORS, FONTS, SPACING, MIN_TOUCH } from '../constants/theme';
+import BotaoVoltar from '../components/BotaoVoltar';
+import { COLORS, FONTS, MIN_TOUCH, SPACING } from '../constants/theme';
+import db from '../database/database';
 
 export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVoltar, onEditarPerfil }) {
   const [perfis, setPerfis] = useState([]);
@@ -66,9 +66,11 @@ export default function MudarPerfilScreen({ idUsuarioAtivo, onSelecionar, onVolt
           {/* Linha superior — avatar + info + ativo */}
           <View style={styles.cardTopo}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarTexto}>
-                {perfil.name.charAt(0).toUpperCase()}
-              </Text>
+              {perfil.foto_path ? (
+                <Image source={{ uri: perfil.foto_path }} style={styles.avatarFoto} />
+              ) : (
+                <Text style={styles.avatarTexto}>{perfil.name.charAt(0).toUpperCase()}</Text>
+              )}
             </View>
             <View style={styles.cardInfo}>
               <Text style={styles.cardNome}>{perfil.name}</Text>
@@ -165,4 +167,7 @@ const styles = StyleSheet.create({
   botaoAcaoTexto: { fontSize: FONTS.large, color: COLORS.primary, fontWeight: '600' },
   botaoExcluirTexto: { color: COLORS.danger },
   divisor: { height: 1, backgroundColor: COLORS.border, marginVertical: SPACING.lg },
+
+  avatarFoto: { width: 56, height: 56, borderRadius: 28 },
+
 });

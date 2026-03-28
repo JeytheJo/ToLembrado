@@ -94,7 +94,13 @@ export default function HomeScreen({ idUsuario, onAddTarefa, onEditTarefa, onMud
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.headerEsq} onPress={onEditarPerfil} activeOpacity={0.7}>
-            <Text style={styles.avatarPequenoTexto}>👤</Text>
+            <View style={styles.avatarPequeno}>
+              {perfil?.foto_path ? (
+                <Image source={{ uri: perfil.foto_path }} style={styles.avatarPequenoFoto} />
+              ) : (
+                <Text style={styles.avatarPequenoTexto}>👤</Text>
+              )}
+            </View>
             <Text style={styles.saudacao}>Olá, {perfil?.name}</Text>
           </TouchableOpacity>
           <View style={styles.headerDir}>
@@ -270,4 +276,9 @@ const styles = StyleSheet.create({
   modalOpcao: { padding: SPACING.lg },
   modalOpcaoTexto: { fontSize: FONTS.large, color: COLORS.textPrimary },
   modalExcluir: { color: COLORS.danger },
+
+  avatarPequeno: { width: 36, height: 36, borderRadius: 18, backgroundColor: COLORS.surface, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
+  avatarPequenoFoto: { width: 36, height: 36, borderRadius: 18 },
+  avatarPequenoTexto: { fontSize: 20 },
+
 });
