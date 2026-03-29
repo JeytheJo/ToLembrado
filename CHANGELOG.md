@@ -4,6 +4,44 @@ All notable changes to this project will be documented here.
 
 ---
 
+## [0.6.0-alpha] — 2026-03-28
+### Added
+- Onboarding screen for new users (5 slides with swipe navigation)
+  - Custom buttons to avoid Android navigation bar overlap
+  - Shown only once on first launch
+  - Logo with Modak font, emoji illustrations per feature
+- Photo picker for user profiles (camera and gallery support)
+  - Photo visible on home screen header
+  - Photo visible on profile selection screen
+  - Option to remove photo on edit screen
+- TimePicker (DateTimePicker) for task time selection
+  - Replaces keyboard input with native time picker dialog
+  - Supports both clock and numeric input modes
+- Notification action button "✓ Marcar como Feito"
+  - Marks task as done directly from notification without opening app
+  - Dismisses notification after marking as done
+  - Home screen auto-reloads when app returns to foreground
+- Android notification channel "tarefas" with high importance
+- Monochrome notification icon for dark mode compatibility
+- Glucometer icon support (PNG) for glucose monitoring tasks
+
+### Changed
+- FAB (+) button now fixed at bottom-right of screen (no longer scrolls with content)
+- Home screen header now shows user profile photo when available
+- Profile selection screen shows profile photo when available
+- Task card status button text changed to "Não realizada!" for clarity
+- Day of week selector now starts unselected (user must choose days)
+- Back button (BotaoVoltar) redesigned with border and larger touch area
+
+### Fixed
+- Notification response listener now correctly handles MARCAR_FEITO action
+- Circular import removed from notificacoes.js
+- AppState subscription now uses correct 'change' event name
+- gradle.properties cleaned of local Java path causing EAS Build failures
+- app.json permissions deduplicated and syntax error fixed
+
+---
+
 ## [0.5.0] — 2026-03-23
 ### Added
 - EAS Build configured for Android development build
@@ -86,7 +124,7 @@ All notable changes to this project will be documented here.
   - Mark task as done or not done
   - Floating action button (+) to add task
 - Task registration screen (`CadastroTarefaScreen`)
-  - Icon selection (💊 🩺 💧 🍽️ 🩹)
+  - Icon selection (💊 🩺 💧 🍽️ 🩹 🩸)
   - Title, quick instruction, time, days of the week and description
   - Required field validation
 - State-based navigation system in `app/index.jsx`
@@ -102,7 +140,7 @@ All notable changes to this project will be documented here.
 ---
 
 ## Upcoming
-- [ ] Publish to Google Play Store
-- [ ] Add profile photo support
-- [ ] Interactive onboarding tutorial for first-time users
+- [ ] Publish to Google Play Store (beta)
 - [ ] Dark mode support
+- [ ] Backup and restore data
+- [ ] Multiple caregivers per profile
